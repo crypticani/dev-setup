@@ -1,0 +1,18 @@
+# Frontend & Formatting
+dbaeumer.vscode-eslint
+esbenp.prettier-vscode
+ritwickdey.liveserver
+
+# DevOps & Docker
+ms-azuretools.vscode-containers
+ms-azuretools.vscode-docker
+redhat.vscode-yaml
+
+# Python Dev
+ms-python.debugpy
+ms-python.python
+ms-python.vscode-python-envs
+
+# Tracking & Intellitech
+visualstudioexptteam.vscodeintellicode
+wakatime.vscode-wakatime

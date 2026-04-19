@@ -1,0 +1,19 @@
+{
+    "editor.fontFamily": "'FiraCode Nerd Font', 'Droid Sans Mono', 'monospace'",
+    "editor.fontLigatures": true,
+    "editor.formatOnSave": true,
+    "editor.minimap.enabled": false,
+    "workbench.iconTheme": "material-icon-theme",
+    "workbench.colorTheme": "Monokai Pro",
+    "files.autoSave": "onFocusChange",
+    "terminal.integrated.defaultProfile.linux": "zsh",
+    "terminal.integrated.fontFamily": "'MesloLGS NF'",
+    "git.autofetch": true,
+    "diffEditor.ignoreTrimWhitespace": false,
+    "[shellscript]": {
+        "editor.defaultFormatter": "foxundermoon.shell-format"
+    },
+    "[json]": {
+        "editor.defaultFormatter": "vscode.json-language-features"
+    }
+}
