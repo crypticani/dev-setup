@@ -10,7 +10,7 @@ if ! command_exists docker; then
     log_info "Installing Docker..."
     if [ "$OS" = "fedora" ]; then
         sudo dnf -y install dnf-plugins-core
-        sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
+        sudo dnf config-manager addrepo --from-repofile=https://download.docker.com/linux/fedora/docker-ce.repo
         sudo dnf install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
     elif [ "$OS" = "ubuntu" ] || [ "$OS" = "debian" ]; then
         curl -fsSL https://get.docker.com -o get-docker.sh
@@ -41,7 +41,7 @@ if ! command_exists terraform; then
     log_info "Installing Terraform..."
     if [ "$OS" = "fedora" ]; then
         sudo dnf install -y dnf-plugins-core
-        sudo dnf config-manager --add-repo https://rpm.releases.hashicorp.com/fedora/hashicorp.repo
+        sudo dnf config-manager addrepo --from-repofile=https://rpm.releases.hashicorp.com/fedora/hashicorp.repo
         sudo dnf -y install terraform
     else
         # fallback to direct download for simple setup

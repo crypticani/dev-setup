@@ -18,3 +18,5 @@ bat
 tree
 eza
 libssl-dev
+figlet
+lolcat
