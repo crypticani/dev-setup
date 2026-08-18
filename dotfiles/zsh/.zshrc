@@ -40,7 +40,7 @@ alias ag='antigravity'
 # Fun greeting (override the name with GREETING_NAME in ~/.env.local)
 (( $+commands[figlet] && $+commands[lolcat] )) && figlet -c "${GREETING_NAME:-$USER}" | lolcat
 
-# Dracula for fzf (bat and btop read their own stowed configs)
+# Dracula for fzf (bat reads its own stowed config)
 export FZF_DEFAULT_OPTS="\
 --color=fg:#f8f8f2,bg:#282a36,hl:#bd93f9 \
 --color=fg+:#f8f8f2,bg+:#44475a,hl+:#bd93f9 \

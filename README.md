@@ -29,7 +29,7 @@ the summary line tells you exactly what to rerun.
 |------------|--------------|
 | `base`     | RPM Fusion + core CLI packages (`dnf-packages.txt` / `apt-packages.txt`) |
 | `zsh`      | oh-my-zsh, autosuggestions, syntax-highlighting, **Dracula theme**, default shell |
-| `dotfiles` | Stows `.zshrc`, `.gitconfig`, `nvim`, `tmux`, `bat`, `btop` — backs up conflicting real files, installs the Dracula nvim colorscheme |
+| `dotfiles` | Stows `.zshrc`, `.gitconfig`, `nvim`, `tmux`, `bat` — backs up conflicting real files, installs the Dracula nvim colorscheme |
 | `devops`   | Docker, kubectl, Terraform, Ansible, AWS CLI, Trivy |
 | `vscode`   | VS Code + `config/extensions.txt` + `config/settings.json` |
 | `desktop`  | JetBrainsMono Nerd Font, Dracula GTK/shell theme, Papirus icons, GNOME extensions, Ptyxis palette, wallpaper |
@@ -42,7 +42,7 @@ the summary line tells you exactly what to rerun.
 dev-setup/
 ├── bootstrap.sh            # entrypoint: checklist + dispatch
 ├── install/                # one script per component
-├── dotfiles/               # GNU Stow packages (zsh, git, nvim, tmux, bat, btop)
+├── dotfiles/               # GNU Stow packages (zsh, git, nvim, tmux, bat)
 ├── config/                 # settings.json, extensions.txt, flatpaks.txt, *.dconf
 │   └── personal/           # one person's desktop state — safe to delete on a fork
 ├── assets/wallpapers/      # wallpapers
@@ -80,9 +80,12 @@ Dracula everywhere, with the palette from [draculatheme.com](https://draculathem
 | Neovim | `dotfiles/nvim/.config/nvim/init.lua` — `dracula/vim` as a native package |
 | tmux | `dotfiles/tmux/.tmux.conf` — hand-rolled, no TPM needed |
 | bat | `dotfiles/bat/.config/bat/config` — `--theme="Dracula"` (built in) |
-| btop | `dotfiles/btop/.config/btop/btop.conf` — ships with btop |
 | fzf | `dotfiles/zsh/.zshrc` — `FZF_DEFAULT_OPTS` |
 | VS Code | `config/settings.json` — `Dracula Theme` extension |
+
+**btop is left alone on purpose.** It rewrites its whole 286-line config on
+exit, so stowing it meant a dirty `git diff` after every run. Set it once in the
+TUI (`Esc` → Options → color theme → `dracula`) — btop ships the theme.
 
 **Icons are the one exception:** Dracula publishes no icon theme, so GNOME uses
 Papirus-Dark (the pairing Dracula's own GTK docs suggest) and VS Code uses
