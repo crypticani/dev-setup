@@ -1,22 +1,31 @@
+# Core
 curl
+wget
 git
 zsh
 stow
-wget
 unzip
 tar
 jq
+libssl-dev
 make
 gcc
+g++
+
+# CLI tooling
 neovim
 tmux
 htop
+btop
 ripgrep
 fd-find
 fzf
 bat
 tree
 eza
-libssl-dev
 figlet
 lolcat
+
+# Python
+python3-pip
+python3-dev

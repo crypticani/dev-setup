@@ -1,93 +1,146 @@
 #!/usr/bin/env bash
+# Main entrypoint. Interactive by default, --all for one-click.
 
-set -e
-
-# Load utility functions
+set -uo pipefail
+cd "$(dirname "$0")"
 source ./scripts/utils.sh
 
-log_info "Starting Developer Workstation Setup..."
+# name|description|default-on|script
+COMPONENTS=(
+    "base|Core CLI packages (git, zsh, stow, ripgrep, fzf, eza, ...)|1|install/base.sh"
+    "zsh|Zsh + oh-my-zsh + plugins + Dracula theme + default shell|1|install/zsh.sh"
+    "dotfiles|Symlink .zshrc / .gitconfig / nvim via GNU Stow|1|install/dotfiles.sh"
+    "devops|Docker, kubectl, Terraform, Ansible, AWS CLI, Trivy|1|install/devops-tools.sh"
+    "vscode|VS Code + extensions + settings.json|1|install/vscode.sh"
+    "desktop|Nerd Fonts, Dracula GTK/shell theme, GNOME extensions, terminal|1|install/desktop.sh"
+    "apps|Chrome, Tailscale, Flatpak apps, power tools|1|install/apps.sh"
+    "node|nvm + latest Node (system node is used otherwise)|0|install/node.sh"
+)
 
-# Detect OS
+usage() {
+    cat <<EOF
+Usage: ./bootstrap.sh [options]
+
+  (no options)      interactive checklist
+  --all             run every component, no prompts
+  --only a,b,c      run only these components
+  --skip a,b        run defaults except these
+  --list            list component names and exit
+  -h, --help        this message
+
+Components: $(for c in "${COMPONENTS[@]}"; do printf '%s ' "${c%%|*}"; done)
+EOF
+}
+
+# --- selection state -------------------------------------------------------
+SELECTED=()
+for c in "${COMPONENTS[@]}"; do
+    IFS='|' read -r _ _ def _ <<<"$c"
+    SELECTED+=("$def")
+done
+
+index_of() {
+    local name=$1 i
+    for i in "${!COMPONENTS[@]}"; do
+        [ "${COMPONENTS[$i]%%|*}" = "$name" ] && { echo "$i"; return 0; }
+    done
+    return 1
+}
+
+set_all() {
+    local value=$1 i
+    for i in "${!SELECTED[@]}"; do SELECTED[$i]=$value; done
+}
+
+set_many() {
+    local value=$1 list=$2 name idx
+    IFS=',' read -ra names <<<"$list"
+    for name in "${names[@]}"; do
+        idx=$(index_of "$name") || { log_error "Unknown component: $name"; exit 1; }
+        SELECTED[$idx]=$value
+    done
+}
+
+INTERACTIVE=1
+while [ $# -gt 0 ]; do
+    case $1 in
+        --all)  INTERACTIVE=0; set_all 1 ;;
+        --only) INTERACTIVE=0; set_all 0; set_many 1 "$2"; shift ;;
+        --skip) INTERACTIVE=0; set_many 0 "$2"; shift ;;
+        --list) for c in "${COMPONENTS[@]}"; do echo "${c%%|*}"; done; exit 0 ;;
+        -h|--help) usage; exit 0 ;;
+        *) log_error "Unknown option: $1"; usage; exit 1 ;;
+    esac
+    shift
+done
+
+print_menu() {
+    echo
+    echo -e "${BOLD}Select what to install/configure:${NC}"
+    local i name desc mark
+    for i in "${!COMPONENTS[@]}"; do
+        IFS='|' read -r name desc _ _ <<<"${COMPONENTS[$i]}"
+        [ "${SELECTED[$i]}" = "1" ] && mark="${GREEN}x${NC}" || mark=" "
+        printf "  %2d) [%b] %-9s %s\n" "$((i + 1))" "$mark" "$name" "$desc"
+    done
+    echo
+}
+
+if [ "$INTERACTIVE" = "1" ]; then
+    while true; do
+        print_menu
+        read -rp "Toggle numbers (e.g. '2 5'), 'a' all, 'n' none, Enter to start: " reply
+        case $reply in
+            "") break ;;
+            a|A) set_all 1 ;;
+            n|N) set_all 0 ;;
+            *)
+                for n in $reply; do
+                    if [[ $n =~ ^[0-9]+$ ]] && [ "$n" -ge 1 ] && [ "$n" -le "${#COMPONENTS[@]}" ]; then
+                        i=$((n - 1))
+                        [ "${SELECTED[$i]}" = "1" ] && SELECTED[$i]=0 || SELECTED[$i]=1
+                    else
+                        log_warning "Ignoring '$n'"
+                    fi
+                done
+                ;;
+        esac
+    done
+fi
+
+# --- run -------------------------------------------------------------------
 if [ -f /etc/os-release ]; then
     . /etc/os-release
     OS=$ID
 else
-    log_error "Cannot detect Operating System."
+    log_error "Cannot detect operating system."
     exit 1
 fi
 
-log_info "Detected OS: $OS"
+log_info "Detected OS: $OS $VERSION_ID"
 
-# Run Base Installations
-log_info "Installing base packages..."
-bash ./install/base.sh "$OS"
+# Prime sudo so long runs don't stall midway on a password prompt.
+sudo -v || log_warning "sudo not primed; individual steps may prompt."
 
-# Set up oh-my-zsh and plugins before stowing to avoid conflicts
-log_info "Setting up Zsh..."
-if [ ! -d "$HOME/.oh-my-zsh" ]; then
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-fi
-
-# Handle existing .zshrc and remove default oh-my-zsh .zshrc so stow works
-if [ -f "$HOME/.zshrc.pre-oh-my-zsh" ]; then
-    log_info "Appending old .zshrc to new dotfiles .zshrc..."
-    cat "$HOME/.zshrc.pre-oh-my-zsh" >> "$PWD/dotfiles/zsh/.zshrc"
-    rm -f "$HOME/.zshrc.pre-oh-my-zsh"
-fi
-rm -f "$HOME/.zshrc"
-
-ZSH_CUSTOM=${ZSH_CUSTOM:-~/.oh-my-zsh/custom}
-if [ ! -d "$ZSH_CUSTOM/plugins/zsh-autosuggestions" ]; then
-    git clone https://github.com/zsh-users/zsh-autosuggestions "$ZSH_CUSTOM/plugins/zsh-autosuggestions" || true
-fi
-if [ ! -d "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting" ]; then
-    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting" || true
-fi
-
-# Apply dotfiles using Stow
-log_info "Stowing dotfiles..."
-cd dotfiles
-# Stow individual dotfile packages
-for app in */ ; do
-    stow -R -t "$HOME" "${app%/}"
-    log_success "Stowed ${app%/}"
+FAILED=()
+DONE=()
+for i in "${!COMPONENTS[@]}"; do
+    [ "${SELECTED[$i]}" = "1" ] || continue
+    IFS='|' read -r name desc _ script <<<"${COMPONENTS[$i]}"
+    log_step "$name — $desc"
+    # A failing component must not abort the rest of the run.
+    if bash "$script" "$OS"; then
+        DONE+=("$name")
+    else
+        FAILED+=("$name")
+        log_error "Component '$name' failed (continuing)."
+    fi
 done
-cd ..
 
-# Install DevOps Tools
-log_info "Installing DevOps tools..."
-bash ./install/devops-tools.sh "$OS"
-
-# Setup VS Code
-log_info "Setting up VS Code..."
-bash ./install/vscode.sh
-
-# Change default shell to zsh if needed
-if [[ "$SHELL" != *zsh ]]; then
-    log_info "Changing default shell to zsh..."
-    sudo usermod -s "$(which zsh)" "$USER" || log_warning "Failed to change shell. You may need to do this manually."
+echo
+[ ${#DONE[@]} -gt 0 ] && log_success "Completed: ${DONE[*]}"
+if [ ${#FAILED[@]} -gt 0 ]; then
+    log_error "Failed: ${FAILED[*]} — rerun with: ./bootstrap.sh --only $(IFS=,; echo "${FAILED[*]}")"
+    exit 1
 fi
-
-# Setup NVM and Antigravity
-log_info "Setting up NVM..."
-export NVM_DIR="$HOME/.nvm"
-if [ ! -d "$NVM_DIR" ]; then
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-    # Load NVM for this session
-    \. "$NVM_DIR/nvm.sh"
-    nvm install node
-    log_success "NVM installed."
-else
-    log_success "NVM already installed."
-    \. "$NVM_DIR/nvm.sh"
-fi
-
-log_info "Installing Antigravity..."
-if ! command_exists antigravity; then
-    npm install -g antigravity || log_warning "Failed to install antigravity via npm."
-    log_success "Antigravity installed."
-else
-    log_success "Antigravity already installed."
-fi
-
-log_success "Setup Completed! Please restart your terminal/session for all changes to take effect."
+log_success "Setup complete. Log out and back in for shell, docker group and GNOME changes."

@@ -1,0 +1,2 @@
+# Flatpak application IDs installed from Flathub
+com.discordapp.Discord

@@ -1,0 +1,9 @@
+[/]
+default-profile-uuid='a7cbc4456199a325aabe90d36a80bbc1'
+font-name='JetBrainsMono Nerd Font Mono 12'
+profile-uuids=['a7cbc4456199a325aabe90d36a80bbc1']
+use-system-font=false
+window-size=(uint32 192, uint32 45)
+
+[Profiles/a7cbc4456199a325aabe90d36a80bbc1]
+palette='dracula'

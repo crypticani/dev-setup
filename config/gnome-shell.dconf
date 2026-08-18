@@ -1,0 +1,36 @@
+[/]
+app-picker-layout=[{'org.gnome.Weather.desktop': <{'position': <0>}>, 'org.gnome.clocks.desktop': <{'position': <1>}>, 'org.gnome.SimpleScan.desktop': <{'position': <2>}>, 'org.gnome.Settings.desktop': <{'position': <3>}>, 'org.gnome.Boxes.desktop': <{'position': <4>}>, 'org.gnome.Showtime.desktop': <{'position': <5>}>, 'org.fedoraproject.MediaWriter.desktop': <{'position': <6>}>, 'org.gnome.Snapshot.desktop': <{'position': <7>}>, 'org.gnome.Characters.desktop': <{'position': <8>}>, 'libreoffice-calc.desktop': <{'position': <9>}>, 'Utilities': <{'position': <10>}>, 'System': <{'position': <11>}>, 'libreoffice-impress.desktop': <{'position': <12>}>, 'org.gnome.Yelp.desktop': <{'position': <13>}>, 'libreoffice-writer.desktop': <{'position': <14>}>, 'htop.desktop': <{'position': <15>}>, 'org.gnome.Calculator.desktop': <{'position': <16>}>, 'nvim.desktop': <{'position': <17>}>, 'org.gnome.Software.desktop': <{'position': <18>}>, 'org.gnome.Calendar.desktop': <{'position': <19>}>, 'org.flameshot.Flameshot.desktop': <{'position': <20>}>, 'org.gnome.tweaks.desktop': <{'position': <21>}>, 'org.gnome.Extensions.desktop': <{'position': <22>}>, 'btop.desktop': <{'position': <23>}>}]
+disabled-extensions=['gsconnect@andyholmes.github.io']
+enabled-extensions=['clipboard-indicator@tudmotu.com', 'background-logo@fedorahosted.org', 'dash-to-dock@micxgx.gmail.com', 'caffeine@patapon.info', 'appindicatorsupport@rgcjonas.gmail.com', 'user-theme@gnome-shell-extensions.gcampax.github.com']
+favorite-apps=['org.gnome.Ptyxis.desktop', 'org.gnome.Nautilus.desktop', 'org.mozilla.firefox.desktop', 'google-chrome.desktop', 'chromium-browser.desktop', 'code.desktop', 'org.gnome.TextEditor.desktop', 'com.discordapp.Discord.desktop']
+last-selected-power-profile='power-saver'
+welcome-dialog-last-shown-version='50.0'
+
+[extensions/caffeine]
+cli-toggle=true
+indicator-position-max=3
+user-enabled=true
+
+[extensions/dash-to-dock]
+apply-custom-theme=false
+background-opacity=0.80000000000000004
+custom-background-color=false
+custom-theme-shrink=false
+dash-max-icon-size=48
+dock-position='BOTTOM'
+height-fraction=0.90000000000000002
+preferred-monitor=-2
+preferred-monitor-by-connector='eDP-1'
+preview-size-scale=0.0
+show-trash=false
+transparency-mode='FIXED'
+
+[extensions/gsconnect]
+missing-openssl=false
+name='fedora'
+
+[extensions/user-theme]
+name='Dracula'
+
+[world-clocks]
+locations=[<(uint32 2, <('Toronto', 'CYTZ', true, [(0.76154532446909495, -1.3857914260834978)], [(0.76212711252195475, -1.3860823201099277)])>)>]

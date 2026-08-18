@@ -1,31 +1,33 @@
 #!/usr/bin/env bash
+# Core CLI packages.
 
-set -e
+set -uo pipefail
 source ./scripts/utils.sh
 
-OS=$1
+OS=${1:-}
 
-if [ "$OS" = "fedora" ]; then
-    log_info "Updating DNF and installing packages from dnf-packages.txt..."
-    sudo dnf update -y
-    xargs -a dnf-packages.txt sudo dnf install -y
-elif [ "$OS" = "ubuntu" ] || [ "$OS" = "debian" ]; then
-    log_info "Updating APT and installing packages from apt-packages.txt..."
-    sudo apt-get update -y
-    xargs -a apt-packages.txt sudo apt-get install -y
-else
-    log_warning "Unsupported OS for base packages: $OS. Skipping base installation."
-fi
+case $OS in
+    fedora)
+        if ! rpm -q rpmfusion-free-release >/dev/null 2>&1; then
+            log_info "Enabling RPM Fusion (codecs and extra packages)..."
+            sudo dnf install -y \
+                "https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm" \
+                "https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm" \
+                || log_warning "RPM Fusion setup failed."
+        else
+            log_success "RPM Fusion already enabled."
+        fi
 
-# Install Homebrew if not exists
-if ! command_exists brew; then
-    log_info "Installing Homebrew..."
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || true
-    
-    # Configure homebrew in path for current session based on OS
-    if [ -d "/home/linuxbrew/.linuxbrew" ]; then
-        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-    fi
-else
-    log_success "Homebrew already installed."
-fi
+        log_info "Installing packages from dnf-packages.txt..."
+        sudo dnf upgrade -y --refresh
+        grep -vE '^\s*(#|$)' dnf-packages.txt | xargs sudo dnf install -y
+        ;;
+    ubuntu|debian)
+        log_info "Installing packages from apt-packages.txt..."
+        sudo apt-get update -y
+        grep -vE '^\s*(#|$)' apt-packages.txt | xargs sudo apt-get install -y
+        ;;
+    *)
+        log_warning "Unsupported OS for base packages: $OS. Skipping."
+        ;;
+esac

@@ -2,24 +2,24 @@
 export ZSH="$HOME/.oh-my-zsh"
 
 # Set name of the theme to load
-ZSH_THEME="eastwood"
+ZSH_THEME="dracula"
 
 # Which plugins would you like to load?
 plugins=(
-	ansible
-	autopep8
-	aws
+#	ansible
+#	autopep8
+#	aws
 	cp
 	docker-compose
 	docker
 	git
 	kubectl
-	nmap
-	node
-	podman
+#	nmap
+#	node
+#	podman
 	ssh
 	zsh-autosuggestions
-    zsh-syntax-highlighting
+        zsh-syntax-highlighting
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -34,11 +34,11 @@ alias dc="docker-compose"
 alias tf="terraform"
 
 # Set personal aliases from original .zshrc
-alias code='codium'
+#alias code='codium'
 alias ag='antigravity'
 
 # Fun greeting
-figlet -c crypticani | lolcat
+(( $+commands[figlet] && $+commands[lolcat] )) && figlet -c crypticani | lolcat
 
 # NVM Setup
 export NVM_DIR="$HOME/.nvm"
@@ -55,3 +55,29 @@ export PATH="$HOME/projects/crypticani/dev-setup/bin:$PATH"
 if [ -f "$HOME/.env.local" ]; then
     source "$HOME/.env.local"
 fi
+
+# Show git branch and status (1 = on, 0 = off)
+DRACULA_DISPLAY_GIT=1
+
+# Show current time
+DRACULA_DISPLAY_TIME=0
+
+# Show username and host context
+DRACULA_DISPLAY_CONTEXT=1
+
+# Show the path as the full current working directory
+DRACULA_DISPLAY_FULL_CWD=1
+
+# Trim the directory path when full cwd is enabled (0 = no trim)
+DRACULA_DIR_TRIM=1
+
+# Put command input on a new line
+DRACULA_DISPLAY_NEW_LINE=0
+
+# Arrow symbol at the prompt start
+#DRACULA_ARROW_ICON="-> "
+
+# Time format, for example a 24-hour clock
+#DRACULA_TIME_FORMAT="%-H:%M"
+
+RPROMPT='%F{#6272A4}%T%f'

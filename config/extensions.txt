@@ -1,18 +1,28 @@
-# Frontend & Formatting
-dbaeumer.vscode-eslint
+# VS Code extension IDs. `scripts/capture.sh` regenerates this from the live
+# machine — review the diff before committing, it drops these comments.
+
+# Theme
+dracula-theme.theme-dracula
+
+# AI
+anthropic.claude-code
+
+# Git
+eamodio.gitlens
+
+# Frontend & formatting
 esbenp.prettier-vscode
 ritwickdey.liveserver
 
-# DevOps & Docker
-ms-azuretools.vscode-containers
-ms-azuretools.vscode-docker
+# DevOps
 redhat.vscode-yaml
+ms-azuretools.vscode-containers
 
-# Python Dev
-ms-python.debugpy
+# Python
 ms-python.python
+ms-python.vscode-pylance
+ms-python.debugpy
 ms-python.vscode-python-envs
 
-# Tracking & Intellitech
-visualstudioexptteam.vscodeintellicode
+# Tracking
 wakatime.vscode-wakatime
