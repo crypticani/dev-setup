@@ -10,6 +10,12 @@ vim.opt.ignorecase = true
 vim.opt.smartcase = true
 vim.opt.termguicolors = true
 
+-- Dracula, installed as a native package by install/dotfiles.sh. pcall so a
+-- missing theme degrades to the default instead of erroring on every startup.
+if not pcall(vim.cmd.colorscheme, "dracula") then
+    vim.notify("dracula colorscheme not installed", vim.log.levels.WARN)
+end
+
 -- Leader key
 vim.g.mapleader = " "
 

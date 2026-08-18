@@ -9,7 +9,7 @@ source ./scripts/utils.sh
 COMPONENTS=(
     "base|Core CLI packages (git, zsh, stow, ripgrep, fzf, eza, ...)|1|install/base.sh"
     "zsh|Zsh + oh-my-zsh + plugins + Dracula theme + default shell|1|install/zsh.sh"
-    "dotfiles|Symlink .zshrc / .gitconfig / nvim via GNU Stow|1|install/dotfiles.sh"
+    "dotfiles|Stow zsh, git, nvim, tmux, bat, btop configs (all Dracula)|1|install/dotfiles.sh"
     "devops|Docker, kubectl, Terraform, Ansible, AWS CLI, Trivy|1|install/devops-tools.sh"
     "vscode|VS Code + extensions + settings.json|1|install/vscode.sh"
     "desktop|Nerd Fonts, Dracula GTK/shell theme, GNOME extensions, terminal|1|install/desktop.sh"

@@ -25,6 +25,13 @@ if [ ! -f "$HOME/.gitconfig.local" ]; then
     fi
 fi
 
+# Dracula for Neovim as a native package — no plugin manager needed. Lives
+# outside the repo so the stowed nvim config stays a pure config directory.
+NVIM_PACK="$HOME/.local/share/nvim/site/pack/themes/start"
+mkdir -p "$NVIM_PACK"
+git_sync https://github.com/dracula/vim.git "$NVIM_PACK/dracula" \
+    && log_success "Dracula colorscheme ready for Neovim."
+
 cd dotfiles
 STATUS=0
 for pkg in */; do

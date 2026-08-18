@@ -29,7 +29,7 @@ the summary line tells you exactly what to rerun.
 |------------|--------------|
 | `base`     | RPM Fusion + core CLI packages (`dnf-packages.txt` / `apt-packages.txt`) |
 | `zsh`      | oh-my-zsh, autosuggestions, syntax-highlighting, **Dracula theme**, default shell |
-| `dotfiles` | Stows `.zshrc`, `.gitconfig`, `nvim` — backs up conflicting real files |
+| `dotfiles` | Stows `.zshrc`, `.gitconfig`, `nvim`, `tmux`, `bat`, `btop` — backs up conflicting real files, installs the Dracula nvim colorscheme |
 | `devops`   | Docker, kubectl, Terraform, Ansible, AWS CLI, Trivy |
 | `vscode`   | VS Code + `config/extensions.txt` + `config/settings.json` |
 | `desktop`  | JetBrainsMono Nerd Font, Dracula GTK/shell theme, Papirus icons, GNOME extensions, Ptyxis palette, wallpaper |
@@ -42,7 +42,7 @@ the summary line tells you exactly what to rerun.
 dev-setup/
 ├── bootstrap.sh            # entrypoint: checklist + dispatch
 ├── install/                # one script per component
-├── dotfiles/               # GNU Stow packages (zsh, git, nvim)
+├── dotfiles/               # GNU Stow packages (zsh, git, nvim, tmux, bat, btop)
 ├── config/                 # settings.json, extensions.txt, flatpaks.txt, *.dconf
 │   └── personal/           # one person's desktop state — safe to delete on a fork
 ├── assets/wallpapers/      # wallpapers
@@ -67,9 +67,31 @@ Nothing here is pinned to one machine or one person:
   key), `config/flatpaks.txt`, `install/apps.sh`, and the `EXTENSIONS` table in
   `install/desktop.sh`.
 
-Theming is Dracula throughout — GTK, GNOME Shell, accent colour, terminal
-palette, zsh prompt, VS Code. Swap it in `install/desktop.sh` and
-`dotfiles/zsh/.zshrc` (`ZSH_THEME`).
+## Theming 🧛
+
+Dracula everywhere, with the palette from [draculatheme.com](https://draculatheme.com):
+
+| Surface | Where it's set |
+|---|---|
+| GTK apps, GNOME Shell | `install/desktop.sh` — `dracula/gtk` into `~/.themes` + `user-theme` |
+| GNOME accent colour | `install/desktop.sh` — `accent-color = purple`, so libadwaita matches |
+| Terminal (Ptyxis) | `config/ptyxis.dconf` — `palette = dracula` |
+| zsh prompt | `dotfiles/zsh/.zshrc` — `ZSH_THEME="dracula"`, installed by `install/zsh.sh` |
+| Neovim | `dotfiles/nvim/.config/nvim/init.lua` — `dracula/vim` as a native package |
+| tmux | `dotfiles/tmux/.tmux.conf` — hand-rolled, no TPM needed |
+| bat | `dotfiles/bat/.config/bat/config` — `--theme="Dracula"` (built in) |
+| btop | `dotfiles/btop/.config/btop/btop.conf` — ships with btop |
+| fzf | `dotfiles/zsh/.zshrc` — `FZF_DEFAULT_OPTS` |
+| VS Code | `config/settings.json` — `Dracula Theme` extension |
+
+**Icons are the one exception:** Dracula publishes no icon theme, so GNOME uses
+Papirus-Dark (the pairing Dracula's own GTK docs suggest) and VS Code uses
+`vs-seti`. For purple folders, `papirus-folders -C violet` gets closer, but it
+rewrites `/usr/share/icons` and has to be re-run after every Papirus update —
+which is why it is not automated here.
+
+To use a different theme, change `ZSH_THEME` in `dotfiles/zsh/.zshrc` and the
+theme lines in `install/desktop.sh`, then swap the dotfiles above.
 
 ## Keeping the repo in sync 🔄
 

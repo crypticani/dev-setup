@@ -31,7 +31,8 @@ else
     rm -rf "$tmp"
 fi
 
-# --- Dracula GTK theme + Papirus icons -------------------------------------
+# --- Dracula GTK theme + icons (Dracula ships no icon set; Papirus is its
+# --- recommended pairing) --------------------------------------------------
 log_info "Installing Dracula GTK theme..."
 mkdir -p "$HOME/.themes"
 git_sync https://github.com/dracula/gtk.git "$HOME/.themes/Dracula"
