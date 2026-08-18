@@ -31,13 +31,7 @@ if git_sync https://github.com/dracula/zsh.git "$ZSH_CUSTOM/themes/dracula"; the
     log_success "Dracula theme installed."
 fi
 
-# oh-my-zsh's installer writes its own ~/.zshrc; drop it so stow can symlink ours.
-if [ -f "$HOME/.zshrc" ] && [ ! -L "$HOME/.zshrc" ]; then
-    if grep -q "oh-my-zsh.sh" "$HOME/.zshrc" && ! grep -q "crypticani" "$HOME/.zshrc"; then
-        rm -f "$HOME/.zshrc"
-        log_info "Removed default oh-my-zsh .zshrc."
-    fi
-fi
+# A real ~/.zshrc here would block stow; install/dotfiles.sh backs it up.
 rm -f "$HOME/.zshrc.pre-oh-my-zsh"
 
 # Default shell

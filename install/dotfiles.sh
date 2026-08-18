@@ -7,6 +7,24 @@ source ./scripts/utils.sh
 
 command_exists stow || pkg_ensure stow
 
+# Git identity is per-person, so it lives outside the repo. Reuse whatever git
+# already knows; only ask if this is a genuinely fresh machine.
+if [ ! -f "$HOME/.gitconfig.local" ]; then
+    name=$(git config --global user.name 2>/dev/null || true)
+    email=$(git config --global user.email 2>/dev/null || true)
+    if [ -z "$name" ] || [ -z "$email" ]; then
+        log_info "Setting up your git identity (stored in ~/.gitconfig.local)."
+        [ -z "$name" ] && read -rp "  Git user.name: " name
+        [ -z "$email" ] && read -rp "  Git user.email: " email
+    fi
+    if [ -n "$name" ] && [ -n "$email" ]; then
+        printf '[user]\n\tname = %s\n\temail = %s\n' "$name" "$email" > "$HOME/.gitconfig.local"
+        log_success "Wrote ~/.gitconfig.local for $name <$email>"
+    else
+        log_warning "No git identity set — run: git config --global user.name/user.email"
+    fi
+fi
+
 cd dotfiles
 STATUS=0
 for pkg in */; do

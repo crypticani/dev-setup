@@ -40,15 +40,15 @@ pkg_ensure papirus-icon-theme gnome-tweaks gnome-extensions-app \
     || log_warning "Could not install theme helper packages."
 
 # --- GNOME Shell extensions ------------------------------------------------
-# uuid|distro package (empty = extensions.gnome.org only)
+# uuid|distro package (empty = extensions.gnome.org only)|enable after install
 EXTENSIONS=(
-    "user-theme@gnome-shell-extensions.gcampax.github.com|gnome-shell-extension-user-theme"
-    "background-logo@fedorahosted.org|gnome-shell-extension-background-logo"
-    "dash-to-dock@micxgx.gmail.com|gnome-shell-extension-dash-to-dock"
-    "appindicatorsupport@rgcjonas.gmail.com|gnome-shell-extension-appindicator"
-    "caffeine@patapon.info|gnome-shell-extension-caffeine"
-    "gsconnect@andyholmes.github.io|gnome-shell-extension-gsconnect"
-    "clipboard-indicator@tudmotu.com|"
+    "user-theme@gnome-shell-extensions.gcampax.github.com|gnome-shell-extension-user-theme|yes"
+    "background-logo@fedorahosted.org|gnome-shell-extension-background-logo|yes"
+    "dash-to-dock@micxgx.gmail.com|gnome-shell-extension-dash-to-dock|yes"
+    "appindicatorsupport@rgcjonas.gmail.com|gnome-shell-extension-appindicator|yes"
+    "caffeine@patapon.info|gnome-shell-extension-caffeine|yes"
+    "clipboard-indicator@tudmotu.com||yes"
+    "gsconnect@andyholmes.github.io|gnome-shell-extension-gsconnect|no"
 )
 
 # Fall back to extensions.gnome.org when there is no distro package.
@@ -70,7 +70,7 @@ install_from_ego() {
 
 log_info "Installing GNOME Shell extensions..."
 for entry in "${EXTENSIONS[@]}"; do
-    IFS='|' read -r uuid pkg <<<"$entry"
+    IFS='|' read -r uuid pkg enable <<<"$entry"
     # Already present as a user or system extension? Leave it alone — installing
     # the distro package on top would just duplicate it.
     if gnome-extensions list 2>/dev/null | grep -qx "$uuid"; then
@@ -80,20 +80,34 @@ for entry in "${EXTENSIONS[@]}"; do
     else
         install_from_ego "$uuid"
     fi
+    if [ "$enable" = "yes" ]; then
+        gnome-extensions enable "$uuid" 2>/dev/null \
+            || log_warning "Could not enable $uuid (needs a session restart)."
+    fi
 done
 
 # --- Settings --------------------------------------------------------------
 log_info "Applying GNOME settings..."
 gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
 gsettings set org.gnome.desktop.interface gtk-theme 'Dracula'
+# Match libadwaita/Shell tinting to Dracula's purple, or GNOME apps stay teal
+# while Dracula-themed GTK apps go purple. Ignored on GNOME < 47.
+gsettings set org.gnome.desktop.interface accent-color 'purple' 2>/dev/null || true
 gsettings set org.gnome.desktop.interface icon-theme 'Papirus-Dark'
 gsettings set org.gnome.desktop.interface monospace-font-name 'JetBrainsMono Nerd Font Mono 12'
 gsettings set org.gnome.shell.extensions.user-theme name 'Dracula' 2>/dev/null || true
 
-# Which extensions are enabled, dock favourites, per-extension tweaks.
+# Shared per-extension tweaks (dock position, caffeine, shell theme name).
 if command_exists dconf && [ -f config/gnome-shell.dconf ]; then
-    dconf load /org/gnome/shell/ < config/gnome-shell.dconf \
-        && log_success "Loaded GNOME Shell settings (enabled extensions, dock favourites)."
+    dconf load /org/gnome/shell/extensions/ < config/gnome-shell.dconf \
+        && log_success "Loaded extension settings."
+fi
+
+# Personal desktop state — dock favourites, app grid order, world clocks.
+# Delete config/personal/ if you forked this; scripts/capture.sh regenerates it.
+if command_exists dconf && [ -f config/personal/gnome-shell.dconf ]; then
+    dconf load /org/gnome/shell/ < config/personal/gnome-shell.dconf \
+        && log_success "Loaded personal Shell state (favourites, app grid)."
 fi
 
 # Ptyxis (Fedora's default terminal): Dracula palette + Nerd Font

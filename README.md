@@ -6,8 +6,8 @@ packages, dotfiles, DevOps tooling, and the full Dracula desktop theming.
 ## Quick Start 🏎️
 
 ```bash
-git clone https://github.com/crypticani/dev-setup.git ~/projects/crypticani/dev-setup
-cd ~/projects/crypticani/dev-setup
+git clone https://github.com/crypticani/dev-setup.git   # anywhere you like
+cd dev-setup
 ./bootstrap.sh          # interactive checklist
 ./bootstrap.sh --all    # one-click, no prompts
 ```
@@ -44,11 +44,32 @@ dev-setup/
 ├── install/                # one script per component
 ├── dotfiles/               # GNU Stow packages (zsh, git, nvim)
 ├── config/                 # settings.json, extensions.txt, flatpaks.txt, *.dconf
+│   └── personal/           # one person's desktop state — safe to delete on a fork
 ├── assets/wallpapers/      # wallpapers
 ├── bin/                    # scripts on PATH (update-system.sh)
 ├── scripts/                # utils.sh, capture.sh, apply-wallpaper.sh
 └── {dnf,apt}-packages.txt  # base package lists
 ```
+
+## Forking this 🍴
+
+Nothing here is pinned to one machine or one person:
+
+- **Git identity** is not in the repo. `install/dotfiles.sh` writes `~/.gitconfig.local`
+  on first run (reusing your existing `git config` if set, otherwise prompting);
+  the tracked `.gitconfig` just `[include]`s it.
+- **Repo location** is derived, not hardcoded — `.zshrc` resolves its own stow
+  symlink, so clone anywhere.
+- **Shell greeting** uses `$USER`; override with `GREETING_NAME` in `~/.env.local`.
+- **`config/personal/`** holds one person's desktop state (dock favourites, app
+  grid order, world clocks). Delete it, or overwrite it with `scripts/capture.sh`.
+- **Taste, edit freely:** `config/extensions.txt` (`wakatime` needs your own API
+  key), `config/flatpaks.txt`, `install/apps.sh`, and the `EXTENSIONS` table in
+  `install/desktop.sh`.
+
+Theming is Dracula throughout — GTK, GNOME Shell, accent colour, terminal
+palette, zsh prompt, VS Code. Swap it in `install/desktop.sh` and
+`dotfiles/zsh/.zshrc` (`ZSH_THEME`).
 
 ## Keeping the repo in sync 🔄
 

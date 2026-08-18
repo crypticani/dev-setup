@@ -24,8 +24,10 @@ fi
 
 if command_exists dconf; then
     log_info "Capturing GNOME Shell and terminal settings..."
-    dconf dump /org/gnome/shell/ > config/gnome-shell.dconf
+    dconf dump /org/gnome/shell/extensions/ > config/gnome-shell.dconf
     dconf dump /org/gnome/Ptyxis/ > config/ptyxis.dconf
+    mkdir -p config/personal
+    dconf dump /org/gnome/shell/ > config/personal/gnome-shell.dconf
 fi
 
 if command_exists gnome-extensions; then

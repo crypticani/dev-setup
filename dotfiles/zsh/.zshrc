@@ -37,8 +37,8 @@ alias tf="terraform"
 #alias code='codium'
 alias ag='antigravity'
 
-# Fun greeting
-(( $+commands[figlet] && $+commands[lolcat] )) && figlet -c crypticani | lolcat
+# Fun greeting (override the name with GREETING_NAME in ~/.env.local)
+(( $+commands[figlet] && $+commands[lolcat] )) && figlet -c "${GREETING_NAME:-$USER}" | lolcat
 
 # NVM Setup
 export NVM_DIR="$HOME/.nvm"
@@ -48,8 +48,10 @@ export NVM_DIR="$HOME/.nvm"
 # Environment setup
 [ -s "$HOME/.local/bin/env" ] && . "$HOME/.local/bin/env"
 
-# Include custom dev-setup bin dir
-export PATH="$HOME/projects/crypticani/dev-setup/bin:$PATH"
+# Include the dev-setup bin dir, resolved from where this file is stowed from,
+# so the repo can live anywhere.
+DEV_SETUP_DIR=${${(%):-%N}:A:h:h:h}
+[ -d "$DEV_SETUP_DIR/bin" ] && export PATH="$DEV_SETUP_DIR/bin:$PATH"
 
 # Load local environment variables if present
 if [ -f "$HOME/.env.local" ]; then
